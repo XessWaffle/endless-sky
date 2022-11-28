@@ -2707,12 +2707,21 @@ bool Ship::Fire(vector<Projectile> &projectiles, vector<Visual> &visuals)
 	for(unsigned i = 0; i < hardpoints.size(); ++i)
 	{
 		const Weapon *weapon = hardpoints[i].GetOutfit();
-		if(weapon && CanFire(weapon))
+		if(weapon)
 		{
-			if(weapon->AntiMissile())
-				antiMissileRange = max(antiMissileRange, weapon->Velocity() + weaponRadius);
-			else if(firingCommands.HasFire(i))
-				armament.Fire(i, *this, projectiles, visuals, Random::Real() < jamChance);
+			bool wantsToFire = firingCommands.HasFire(i);
+			if(wantsToFire)
+				armament.Charge(i, *this);
+			else
+				armament.Discharge(i, *this);
+
+			if(CanFire(weapon))
+			{
+				if(weapon->AntiMissile())
+					antiMissileRange = max(antiMissileRange, weapon->Velocity() + weaponRadius);
+				else if(wantsToFire)
+					armament.Fire(i, *this, projectiles, visuals, Random::Real() < jamChance);
+			}
 		}
 	}
 

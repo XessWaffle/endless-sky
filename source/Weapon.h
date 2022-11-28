@@ -146,6 +146,9 @@ public:
 	// Gravitational weapons deal the same amount of hit force to a ship regardless
 	// of its mass.
 	bool IsGravitational() const;
+	bool IsCharging() const;
+	// Check if the weapon is charged
+	bool IsCharged() const;
 
 	// These values include all submunitions:
 	// Normal damage types:
@@ -193,6 +196,10 @@ protected:
 	// default turnrate.
 	void SetTurretTurn(double rate);
 
+	// Support for charging/Discharging;
+	void Charge();
+	void Discharge();
+
 	// A pair representing the outfit that is consumed as ammo and the number
 	// of that outfit consumed upon fire.
 	std::pair<const Outfit*, int> ammo;
@@ -224,6 +231,7 @@ private:
 	bool isPhasing = false;
 	bool isDamageScaled = true;
 	bool isGravitational = false;
+	bool isCharging = false;
 	// Guns and missiles are by default aimed a converged point at the
 	// maximum weapons range in front of the ship. When either the installed
 	// weapon or the gun-port (or both) have the isParallel attribute set
@@ -277,6 +285,10 @@ private:
 	double relativeFiringHull = 0.;
 	double relativeFiringShields = 0.;
 
+	double chargeThreshold = 0.;
+	double chargeRate = 0.;
+	double dischargeRate = 0.;
+
 	double splitRange = 0.;
 	double triggerRadius = 0.;
 	double blastRadius = 0.;
@@ -322,6 +334,8 @@ private:
 	mutable bool calculatedDamage = true;
 	mutable bool doesDamage = false;
 	mutable double totalLifetime = -1.;
+	// Mutable parameter to calculate how charged the weapon is
+	mutable double charge = 0.;
 };
 
 
@@ -385,6 +399,8 @@ inline bool Weapon::IsSafe() const { return isSafe; }
 inline bool Weapon::IsPhasing() const { return isPhasing; }
 inline bool Weapon::IsDamageScaled() const { return isDamageScaled; }
 inline bool Weapon::IsGravitational() const { return isGravitational; }
+inline bool Weapon::IsCharging() const { return isCharging; }
+inline bool Weapon::IsCharged() const { return charge >= chargeThreshold; }
 
 inline double Weapon::ShieldDamage() const { return TotalDamage(SHIELD_DAMAGE); }
 inline double Weapon::HullDamage() const { return TotalDamage(HULL_DAMAGE); }

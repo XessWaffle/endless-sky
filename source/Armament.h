@@ -70,6 +70,9 @@ public:
 
 	// Adjust the aim of the turrets.
 	void Aim(const FireCommand &command);
+	// Charge/Discharge the weapon if it is a charging type weapon and apply any effects to the ship
+	void Charge(int index, Ship &ship);
+	void Discharge(int index, Ship &ship);
 	// Fire the given weapon, if it is ready. If it did not fire because it is
 	// not ready, return false.
 	void Fire(int index, Ship &ship, std::vector<Projectile> &projectiles, std::vector<Visual> &visuals, bool jammed);

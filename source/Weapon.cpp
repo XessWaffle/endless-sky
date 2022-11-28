@@ -480,6 +480,22 @@ void Weapon::SetTurretTurn(double rate)
 
 
 
+void Weapon::Charge()
+{
+	if(charge < chargeThreshold)
+		charge += chargeRate;
+}
+
+
+
+void Weapon::Discharge()
+{
+	if(charge)
+		charge -= dischargeRate;
+}
+
+
+
 double Weapon::TotalDamage(int index) const
 {
 	if(!calculatedDamage)
