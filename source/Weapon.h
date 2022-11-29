@@ -53,7 +53,6 @@ public:
 		Point offset;
 	};
 
-
 public:
 	// Load from a "weapon" node, either in an outfit, a ship (explosion), or a hazard.
 	void LoadWeapon(const DataNode &node);
@@ -108,6 +107,26 @@ public:
 	double InfraredTracking() const;
 	double RadarTracking() const;
 
+	// Parameters needed for charging/discharging weapons
+	double ChargingEnergy() const;
+	double ChargingHeat() const;
+	double ChargingFuel() const;
+	double ChargingHull() const;
+	double ChargingShields() const;
+
+	double DischargingEnergy() const;
+	double DischargingHeat() const;
+	double DischargingFuel() const;
+	double DischargingHull() const;
+	double DischargingShields() const;
+
+	// How much (energy, heat, fuel, etc.) before a weapon is considered charged
+	double MaximumChargeEnergy() const;
+	double MaximumChargeHeat() const;
+	double MaximumChargeFuel() const;
+	double MaximumChargeHull() const;
+	double MaximumChargeShields() const;
+
 	// Normal damage sustained on firing ship when weapon fired.
 	double FiringEnergy() const;
 	double FiringForce() const;
@@ -147,9 +166,12 @@ public:
 	// of its mass.
 	bool IsGravitational() const;
 	bool IsCharging() const;
-	// Check if the weapon is charged
-	bool IsCharged() const;
-
+	// States of the different kinds of charges
+	double EnergyCharge() const;
+	double HeatCharge() const;
+	double FuelCharge() const;
+	double HullCharge() const;
+	double ShieldsCharge() const;
 	// These values include all submunitions:
 	// Normal damage types:
 	double ShieldDamage() const;
@@ -195,10 +217,6 @@ protected:
 	// Legacy support: allow turret outfits with no turn rate to specify a
 	// default turnrate.
 	void SetTurretTurn(double rate);
-
-	// Support for charging/Discharging;
-	void Charge();
-	void Discharge();
 
 	// A pair representing the outfit that is consumed as ammo and the number
 	// of that outfit consumed upon fire.
@@ -285,9 +303,23 @@ private:
 	double relativeFiringHull = 0.;
 	double relativeFiringShields = 0.;
 
-	double chargeThreshold = 0.;
-	double chargeRate = 0.;
-	double dischargeRate = 0.;
+	double chargingEnergy = 0.;
+	double chargingHeat = 0.;
+	double chargingFuel = 0.;
+	double chargingHull = 0.;
+	double chargingShields = 0.; 
+	
+	double dischargingEnergy = 0.;
+	double dischargingHeat = 0.;
+	double dischargingFuel = 0.;
+	double dischargingHull = 0.;
+	double dischargingShields = 0.; 
+	
+	double maxChargeEnergy = 0.;
+	double maxChargeHeat = 0.;
+	double maxChargeFuel = 0.;
+	double maxChargeHull = 0.;
+	double maxChargeShields = 0.; 
 
 	double splitRange = 0.;
 	double triggerRadius = 0.;
@@ -334,8 +366,6 @@ private:
 	mutable bool calculatedDamage = true;
 	mutable bool doesDamage = false;
 	mutable double totalLifetime = -1.;
-	// Mutable parameter to calculate how charged the weapon is
-	mutable double charge = 0.;
 };
 
 
@@ -400,7 +430,6 @@ inline bool Weapon::IsPhasing() const { return isPhasing; }
 inline bool Weapon::IsDamageScaled() const { return isDamageScaled; }
 inline bool Weapon::IsGravitational() const { return isGravitational; }
 inline bool Weapon::IsCharging() const { return isCharging; }
-inline bool Weapon::IsCharged() const { return charge >= chargeThreshold; }
 
 inline double Weapon::ShieldDamage() const { return TotalDamage(SHIELD_DAMAGE); }
 inline double Weapon::HullDamage() const { return TotalDamage(HULL_DAMAGE); }
@@ -425,6 +454,24 @@ inline double Weapon::RelativeMinableDamage() const { return TotalDamage(RELATIV
 inline double Weapon::RelativeFuelDamage() const { return TotalDamage(RELATIVE_FUEL_DAMAGE); }
 inline double Weapon::RelativeHeatDamage() const { return TotalDamage(RELATIVE_HEAT_DAMAGE); }
 inline double Weapon::RelativeEnergyDamage() const { return TotalDamage(RELATIVE_ENERGY_DAMAGE); }
+
+inline double Weapon::ChargingEnergy() const { return chargingEnergy; }
+inline double Weapon::ChargingHeat() const { return chargingHeat; }
+inline double Weapon::ChargingFuel() const { return chargingFuel; }
+inline double Weapon::ChargingHull() const { return chargingHull; }
+inline double Weapon::ChargingShields() const { return chargingShields; }
+
+inline double Weapon::DischargingEnergy() const { return dischargingEnergy; }
+inline double Weapon::DischargingHeat() const { return dischargingHeat; }
+inline double Weapon::DischargingFuel() const { return dischargingFuel; }
+inline double Weapon::DischargingHull() const { return dischargingHull; }
+inline double Weapon::DischargingShields() const { return dischargingShields; }
+
+inline double Weapon::MaximumChargeEnergy() const { return maxChargeEnergy; }
+inline double Weapon::MaximumChargeHeat() const { return maxChargeHeat; }
+inline double Weapon::MaximumChargeFuel() const { return maxChargeFuel; }
+inline double Weapon::MaximumChargeHull() const { return maxChargeHull; }
+inline double Weapon::MaximumChargeShields() const { return maxChargeShields; }
 
 inline bool Weapon::DoesDamage() const { if(!calculatedDamage) TotalDamage(0); return doesDamage; }
 

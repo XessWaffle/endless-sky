@@ -2710,10 +2710,13 @@ bool Ship::Fire(vector<Projectile> &projectiles, vector<Visual> &visuals)
 		if(weapon)
 		{
 			bool wantsToFire = firingCommands.HasFire(i);
-			if(wantsToFire)
-				armament.Charge(i, *this);
-			else
-				armament.Discharge(i, *this);
+			if(weapon->IsCharging())
+			{
+				if(wantsToFire && CanCharge(weapon))
+					armament.Charge(i, *this);
+				else
+					armament.Discharge(i, *this);
+			}
 
 			if(CanFire(weapon))
 			{
@@ -2722,6 +2725,7 @@ bool Ship::Fire(vector<Projectile> &projectiles, vector<Visual> &visuals)
 				else if(wantsToFire)
 					armament.Fire(i, *this, projectiles, visuals, Random::Real() < jamChance);
 			}
+		
 		}
 	}
 
@@ -3921,6 +3925,32 @@ const vector<Hardpoint> &Ship::Weapons() const
 
 
 
+// Check if we are able to charge the given weapon (i.e. there is enough
+// energy, ammo, and fuel to fire it).
+bool Ship::CanCharge(const Weapon *weapon) const
+{
+	if(!weapon || !weapon->IsWeapon())
+		return false;
+
+	if(energy < weapon->ChargingEnergy())
+		return false;
+	if(fuel < weapon->ChargingFuel())
+		return false;
+	// We do check hull, but we don't check shields. Ships can survive with all shields depleted.
+	// Ships should not disable themselves, so we check if we stay above minimumHull.
+	if(hull - MinimumHull() < weapon->ChargingHull())
+		return false;
+
+	// If a weapon requires heat to charge, (rather than generating heat), we must
+	// have enough heat to spare.
+	if(heat < -weapon->ChargingHeat())
+		return false;
+	
+	return true;
+}
+
+
+
 // Check if we are able to fire the given weapon (i.e. there is enough
 // energy, ammo, and fuel to fire it).
 bool Ship::CanFire(const Weapon *weapon) const
@@ -3960,6 +3990,28 @@ bool Ship::CanFire(const Weapon *weapon) const
 	return true;
 }
 
+
+
+// Apply effects of charging/discharging this weapon.
+void Ship::Charge(const Weapon &weapon)
+{
+	energy -= weapon.ChargingEnergy();
+	fuel -= weapon.ChargingFuel();
+	heat -= weapon.ChargingHeat();
+	shields -= weapon.ChargingShields();
+	hull -= weapon.ChargingHull();
+}
+
+
+
+void Ship::Discharge(const Weapon &weapon)
+{
+	energy += weapon.DischargingEnergy();
+	fuel += weapon.DischargingFuel();
+	heat += weapon.DischargingHeat();
+	shields += weapon.DischargingShields();
+	hull += weapon.DischargingHull();
+}
 
 
 // Fire the given weapon (i.e. deduct whatever energy, ammo, hull, shields

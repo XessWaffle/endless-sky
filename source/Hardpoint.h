@@ -27,7 +27,6 @@ class Ship;
 class Visual;
 
 
-
 // A single weapon hardpoint on the ship (i.e. a gun port or turret mount),
 // which may or may not have a weapon installed.
 class Hardpoint {
@@ -68,9 +67,12 @@ public:
 	// Adjust this weapon's aim by the given amount, relative to its maximum
 	// "turret turn" rate.
 	void Aim(double amount);
+	// Charge/Discharge the onboard weapon
+	void Charge(Ship &ship);
+	void Discharge(Ship &ship);
 	// Fire this weapon. If it is a turret, it automatically points toward
 	// the given ship's target. If the weapon requires ammunition, it will
-	// be subtracted from the given ship.
+	// be subtracted from the given ship
 	void Fire(Ship &ship, std::vector<Projectile> &projectiles, std::vector<Visual> &visuals);
 	// Fire an anti-missile. Returns true if the missile should be killed.
 	bool FireAntiMissile(Ship &ship, const Projectile &projectile, std::vector<Visual> &visuals);
@@ -113,6 +115,14 @@ private:
 	int burstCount = 0;
 	bool isFiring = false;
 	bool wasFiring = false;
+	// Charging attributes
+	static const int CHARGE_TYPES = 5;
+	static const int CHARGE_ENERGY = 1;
+	static const int CHARGE_HEAT = 2;
+	static const int CHARGE_FUEL = 3;
+	static const int CHARGE_HULL = 4;
+	static const int CHARGE_SHIELDS = 5;
+	double charge[CHARGE_TYPES];
 };
 
 

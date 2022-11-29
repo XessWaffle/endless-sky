@@ -208,6 +208,59 @@ void Hardpoint::Aim(double amount)
 }
 
 
+// Charge/Discharge the onboard weapon
+void Hardpoint::Charge(Ship &ship)
+{
+	if(charge[CHARGE_ENERGY])
+		charge[CHARGE_ENERGY] += outfit->ChargingEnergy();
+	if(charge[CHARGE_FUEL])
+		charge[CHARGE_FUEL] += outfit->ChargingFuel();
+	if(charge[CHARGE_HEAT])
+		charge[CHARGE_HEAT] += outfit->ChargingHeat();
+	if(charge[CHARGE_HULL])
+		charge[CHARGE_HULL] += outfit->ChargingHull();
+	if(charge[CHARGE_SHIELDS])
+		charge[CHARGE_SHIELDS] += outfit->ChargingShields();
+	ship.Charge(*outfit);
+}
+
+
+
+void Hardpoint::Discharge(Ship &ship)
+{
+	if(isFiring)
+	{
+		if(charge[CHARGE_ENERGY])
+			charge[CHARGE_ENERGY] -= outfit->FiringEnergy();
+		if(charge[CHARGE_FUEL])
+			charge[CHARGE_FUEL] -= outfit->FiringFuel();
+		if(charge[CHARGE_HEAT])
+			charge[CHARGE_HEAT] -= outfit->FiringHeat();
+		if(charge[CHARGE_HULL])
+			charge[CHARGE_HULL] -= outfit->FiringHull();
+		if(charge[CHARGE_SHIELDS])
+			charge[CHARGE_SHIELDS] -= outfit->FiringShields();
+	}
+	else
+	{
+		if(charge[CHARGE_ENERGY])
+			charge[CHARGE_ENERGY] -= outfit->DischargingEnergy() ? outfit->DischargingEnergy() : outfit->ChargingEnergy();
+		if(charge[CHARGE_FUEL])
+			charge[CHARGE_FUEL] -= outfit->DischargingFuel() ? outfit->DischargingFuel() : outfit->ChargingFuel();
+		if(charge[CHARGE_HEAT])
+			charge[CHARGE_HEAT] -= outfit->DischargingHeat() ? outfit->DischargingHeat() : outfit->ChargingHeat();
+		if(charge[CHARGE_HULL])
+			charge[CHARGE_HULL] -= outfit->DischargingHull() ? outfit->DischargingHull() : outfit->ChargingHull();
+		if(charge[CHARGE_SHIELDS])
+			charge[CHARGE_SHIELDS] -= outfit->DischargingShields() ? outfit->DischargingShields() : outfit->ChargingShields();
+	}
+	for(int i = 0; i < CHARGE_TYPES; i++)
+		if(charge[i] < 0)
+			charge[i] = 0;
+	ship.Discharge(*outfit);
+}
+
+
 
 // Fire this weapon. If it is a turret, it automatically points toward
 // the given ship's target. If the weapon requires ammunition, it will

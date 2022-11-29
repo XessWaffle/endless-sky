@@ -231,6 +231,27 @@ void Armament::Aim(const FireCommand &command)
 
 
 
+// Charge/Discharge the weapon if it is a charging type weapon and apply any effects to the ship
+void Armament::Charge(int index, Ship &ship)
+{
+	if(static_cast<unsigned>(index) >= hardpoints.size() || !hardpoints[index].IsReady())
+		return;
+	
+	hardpoints[index].Charge(ship);
+}
+
+
+
+void Armament::Discharge(int index, Ship &ship)
+{
+	if(static_cast<unsigned>(index) >= hardpoints.size() || !hardpoints[index].IsReady())
+		return;
+	
+	hardpoints[index].Discharge(ship);
+}
+
+
+
 // Fire the given weapon, if it is ready. If it did not fire because it is
 // not ready, return false.
 void Armament::Fire(int index, Ship &ship, vector<Projectile> &projectiles, vector<Visual> &visuals, bool jammed)

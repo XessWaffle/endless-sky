@@ -278,6 +278,38 @@ void Weapon::LoadWeapon(const DataNode &node)
 			}
 			else if(key == "dropoff modifier")
 				damageDropoffModifier = max(0., value);
+			else if(key == "charging")
+				isCharging = true;
+			else if(key == "charging energy")
+				chargingEnergy = value;
+			else if(key == "charging heat")
+				chargingHeat = value;
+			else if(key == "charging fuel")
+				chargingFuel = value;
+			else if(key == "charging hull")
+				chargingHull = value;
+			else if(key == "charging shields")
+				chargingShields = value;
+			else if(key == "discharging energy")
+				dischargingEnergy = value;
+			else if(key == "discharging heat")
+				dischargingHeat = value;
+			else if(key == "discharging fuel")
+				dischargingFuel = value;
+			else if(key == "discharging hull")
+				dischargingHull = value;
+			else if(key == "discharging shields")
+				dischargingShields = value;
+			else if(key == "max charge energy")
+				maxChargeEnergy = value;
+			else if(key == "max charge heat")
+				maxChargeHeat = value;
+			else if(key == "max charge fuel")
+				maxChargeFuel = value;
+			else if(key == "max charge hull")
+				maxChargeHull = value;
+			else if(key == "max charge shields")
+				maxChargeShields = value;
 			else
 				child.PrintTrace("Unrecognized weapon attribute: \"" + key + "\":");
 		}
@@ -476,22 +508,6 @@ double Weapon::DamageDropoff(double distance) const
 void Weapon::SetTurretTurn(double rate)
 {
 	turretTurn = rate;
-}
-
-
-
-void Weapon::Charge()
-{
-	if(charge < chargeThreshold)
-		charge += chargeRate;
-}
-
-
-
-void Weapon::Discharge()
-{
-	if(charge)
-		charge -= dischargeRate;
 }
 
 

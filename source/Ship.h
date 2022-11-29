@@ -406,9 +406,13 @@ public:
 	// Get the list of weapons.
 	Armament &GetArmament();
 	const std::vector<Hardpoint> &Weapons() const;
-	// Check if we are able to fire the given weapon (i.e. there is enough
-	// energy, ammo, and fuel to fire it).
+	// Check if we are able to fire/charge the given weapon (i.e. there is enough
+	// energy, ammo, and fuel to fire/charge it).
+	bool CanCharge(const Weapon *weapon) const;
 	bool CanFire(const Weapon *weapon) const;
+	// Apply effects of charging/discharging this weapon.
+	void Charge(const Weapon &weapon);
+	void Discharge(const Weapon &weapon);
 	// Fire the given weapon (i.e. deduct whatever energy, ammo, or fuel it uses
 	// and add whatever heat it generates. Assume that CanFire() is true.
 	void ExpendAmmo(const Weapon &weapon);
