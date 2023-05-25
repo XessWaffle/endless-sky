@@ -18,7 +18,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include <string>
 
-class DataFile;
 class DataNode;
 
 
@@ -33,18 +32,14 @@ public:
 	bool Inject() const;
 
 	// Types of datafiles that can be stored.
-	enum class Type {UNSPECIFIED, SAVEGAME, MISSION};
+	enum class Type {UNSPECIFIED, SAVEGAME};
 
 
 
 private:
-	const DataNode *GetContentsNode(const DataFile &sourceData) const;
-
 	// Writes out testdata as savegame file.
 	bool InjectSavegame() const;
 
-	// Loads a mission stored in testdata into a Mission through GameData.
-	bool InjectMission() const;
 
 
 private:

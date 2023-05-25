@@ -115,7 +115,7 @@ void MapShipyardPanel::Select(int index)
 	else
 	{
 		selected = list[index];
-		selectedInfo.Update(*selected, player);
+		selectedInfo.Update(*selected, player.StockDepreciation(), player.GetDate().DaysSinceEpoch());
 	}
 	UpdateCache();
 }
@@ -129,7 +129,7 @@ void MapShipyardPanel::Compare(int index)
 	else
 	{
 		compare = list[index];
-		compareInfo.Update(*compare, player);
+		compareInfo.Update(*compare, player.StockDepreciation(), player.GetDate().DaysSinceEpoch());
 	}
 }
 
@@ -182,9 +182,8 @@ void MapShipyardPanel::DrawItems()
 		DoHelp("map advanced shops");
 	list.clear();
 	Point corner = Screen::TopLeft() + Point(0, scroll);
-	for(const auto &cat : categories)
+	for(const string &category : categories)
 	{
-		const string &category = cat.Name();
 		auto it = catalog.find(category);
 		if(it == catalog.end())
 			continue;
@@ -195,7 +194,7 @@ void MapShipyardPanel::DrawItems()
 
 		for(const Ship *ship : it->second)
 		{
-			string price = Format::CreditString(ship->Cost());
+			string price = Format::Credits(ship->Cost()) + " credits";
 
 			string info = Format::Number(ship->Attributes().Get("shields")) + " shields / ";
 			info += Format::Number(ship->Attributes().Get("hull")) + " hull";

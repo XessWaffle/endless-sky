@@ -19,7 +19,6 @@ bin/
 lib/
 x64/
 Debug/
-install/
 Release/
 *.layout
 *.depend

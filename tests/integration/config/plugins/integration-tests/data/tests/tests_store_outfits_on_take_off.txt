@@ -1,4 +1,4 @@
-test-data "Outfit Take Off Storage Save"
+test-data "A Sparrow and a Shuttle and a Shield Generator on Prime"
 	category "savegame"
 	contents
 		pilot Billy Bughunter
@@ -121,7 +121,7 @@ test-data "Outfit Take Off Storage Save"
 		"visited planet" Prime
 
 
-test-data "Outfit Take Off Selling Save"
+test-data "A Sparrow and a Shuttle and a Shield Generator on Winter"
 	category "savegame"
 	contents
 		pilot Billy Bughunter
@@ -246,10 +246,10 @@ test-data "Outfit Take Off Selling Save"
 
 test "Store Outfit On Take Off"
 	status active
-	description "Test the automatic storing of an outfit in cargo that cannot fit in any ships after taking off."
+	description "Test the automatic storing of a an outfit in cargo that cannot fit in any ships after taking off."
 	sequence
 		# Create/inject the savegame and load it.
-		inject "Outfit Take Off Storage Save"
+		inject "A Sparrow and a Shuttle and a Shield Generator on Prime"
 		call "Load First Savegame"
 		# Check startup conditions.
 		assert
@@ -281,7 +281,7 @@ test "Sell Outfit On Take Off"
 	description "Test the automatic selling of an outfit in cargo that cannot fit in any ships after taking off from a planet with no outfitter."
 	sequence
 		# Create/inject the savegame and load it.
-		inject "Outfit Take Off Selling Save"
+		inject "A Sparrow and a Shuttle and a Shield Generator on Winter"
 		call "Load First Savegame"
 		# Check startup conditions.
 		assert

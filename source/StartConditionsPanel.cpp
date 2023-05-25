@@ -53,13 +53,9 @@ StartConditionsPanel::StartConditionsPanel(PlayerInfo &player, UI &gamePanels,
 	selectedBackground(*GameData::Colors().Get("faint")),
 	description(FontSet::Get(14))
 {
-	// Extract from all start scenarios those that are visible to the player.
 	for(const auto &scenario : allScenarios)
 		if(scenario.Visible(GameData::GlobalConditions()))
-		{
 			scenarios.emplace_back(scenario);
-			scenarios.back().SetState(GameData::GlobalConditions());
-		}
 
 	startIt = scenarios.begin();
 
@@ -123,7 +119,8 @@ void StartConditionsPanel::Draw()
 		if(it == startIt)
 			FillShader::Fill(zone.Center(), zone.Dimensions(), selectedBackground.Additive(opacity));
 
-		const auto name = DisplayText(it->GetDisplayName(), Truncate::BACK);
+		const auto name = DisplayText(
+			it->Revealed(GameData::GlobalConditions()) ? it->GetDisplayName() : "???", Truncate::BACK);
 		font.Draw(name, pos + entryTextPadding, (isHighlighted ? bright : medium).Transparent(opacity));
 	}
 
@@ -308,25 +305,29 @@ void StartConditionsPanel::Select(StartConditionsList::iterator it)
 		return;
 	}
 
-
 	// Update the information summary.
 	info.SetCondition("chosen start");
-	if(startIt->IsUnlocked())
-		info.SetCondition("unlocked start");
 	if(startIt->GetThumbnail())
 		info.SetSprite("thumbnail", startIt->GetThumbnail());
-	info.SetString("name", startIt->GetDisplayName());
-	info.SetString("description", startIt->GetDescription());
-	info.SetString("planet", startIt->GetPlanetName());
-	info.SetString("system", startIt->GetSystemName());
-	info.SetString("date", startIt->GetDateString());
-	info.SetString("credits", startIt->GetCredits());
-	info.SetString("debt", startIt->GetDebt());
+	info.SetString("name", startIt->Revealed(GameData::GlobalConditions())
+		? startIt->GetDisplayName() : "???");
+	info.SetString("description", startIt->Revealed(GameData::GlobalConditions())
+		? startIt->GetDescription() : startIt->GetHint());
 
+	if(startIt->Revealed(GameData::GlobalConditions()))
+	{
+		if(startIt->Unlocked(GameData::GlobalConditions()))
+			info.SetCondition("unlocked start");
+		info.SetString("planet", startIt->GetPlanet().Name());
+		info.SetString("system", startIt->GetSystem().Name());
+		info.SetString("date", startIt->GetDate().ToString());
+		info.SetString("credits", Format::Credits(startIt->GetAccounts().Credits()));
+		info.SetString("debt", Format::Credits(startIt->GetAccounts().TotalDebt()));
+	}
 
 	// Update the displayed description text.
 	descriptionScroll = 0;
-	description.Wrap(startIt->GetDescription());
+	description.Wrap(startIt->Revealed(GameData::GlobalConditions()) ? startIt->GetDescription() : startIt->GetHint());
 
 	// Scroll the selected scenario into view.
 	ScrollToSelected();

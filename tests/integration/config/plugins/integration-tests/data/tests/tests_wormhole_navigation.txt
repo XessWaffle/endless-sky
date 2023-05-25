@@ -1,4 +1,4 @@
-test-data "Wormhole Navigation Save"
+test-data "Wormhole Navigation"
 	category "savegame"
 	contents
 		pilot Bobbi Bughunter
@@ -44,12 +44,11 @@ test-data "Wormhole Navigation Save"
 				"gaslining" 1
 				"atmosphere scan" 100
 				"outfit scan power" 175
-				"outfit scan efficiency" 1
+				"outfit scan speed" 1
 				"tactical scan power" 350
 				"force protection" 1
 				"heat protection" 1.5
 				"ion resistance" 0.3
-				"scrambling resistance" 0.3
 				"slowing resistance" 3
 				"remnant node" 11
 				weapon
@@ -115,7 +114,7 @@ test-data "Wormhole Navigation Save"
 		visited "Heia Due"
 		"visited planet" "Wormhole Alpha"
 
-test-data "Ember Wastes Navigation Save"
+test-data "Ember Wastes Navigation"
 	category "savegame"
 	contents
 		pilot Bobbi Bughunter
@@ -161,12 +160,11 @@ test-data "Ember Wastes Navigation Save"
 				"gaslining" 1
 				"atmosphere scan" 100
 				"outfit scan power" 175
-				"outfit scan efficiency" 1
+				"outfit scan speed" 1
 				"tactical scan power" 350
 				"force protection" 1
 				"heat protection" 1.5
 				"ion resistance" 0.3
-				"scrambling resistance" 0.3
 				"slowing resistance" 3
 				"remnant node" 11
 				weapon
@@ -238,12 +236,12 @@ test-data "Ember Wastes Navigation Save"
 		"visited planet" "Ember Wormhole"
 		"visited planet" "Remnant Wormhole"
 
-test "Wormhole Navigation"
+test "Tests - Wormhole Navigation"
 	status active
 	description "Tests - Navigation to and from Hai space, to test wormhole functionality."
 	sequence
 		# Create/inject the savegame and load it.
-		inject "Wormhole Navigation Save"
+		inject "Wormhole Navigation"
 		call "Load First Savegame"
 		# Set desired travel plan.
 		navigate
@@ -314,12 +312,12 @@ test "Wormhole Navigation"
 		branch notBetelgeuse
 			not "flagship system: Betelgeuse"
 
-test "Ember Wastes Navigation"
+test "Tests - Ember Wastes Navigation"
 	status active
 	description "Tests - Navigation to and from the Ember Wastes, testing wormholes that require outfits to land."
 	sequence
 		# Create/inject the savegame and load it.
-		inject "Ember Wastes Navigation Save"
+		inject "Ember Wastes Navigation"
 		call "Load First Savegame"
 		# Set desired travel plan.
 		navigate

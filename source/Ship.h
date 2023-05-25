@@ -27,7 +27,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Outfit.h"
 #include "Personality.h"
 #include "Point.h"
-#include "ship/ShipAICache.h"
 #include "ShipJumpNavigation.h"
 
 #include <list>
@@ -46,7 +45,6 @@ class Government;
 class Minable;
 class Phrase;
 class Planet;
-class PlayerInfo;
 class Projectile;
 class StellarObject;
 class System;
@@ -198,11 +196,6 @@ public:
 	const Phrase *GetHailPhrase() const;
 	void SetHailPhrase(const Phrase &phrase);
 	std::string GetHail(std::map<std::string, std::string> &&subs) const;
-	bool CanSendHail(const PlayerInfo &player, bool allowUntranslated = false) const;
-
-	// Access the ship's AI cache, containing the range and expected AI behavior for this ship.
-	ShipAICache &GetAICache();
-	void UpdateCaches();
 
 	// Set the commands for this ship to follow this timestep.
 	void SetCommands(const Command &command);
@@ -222,7 +215,7 @@ public:
 	std::shared_ptr<Ship> Board(bool autoPlunder, bool nonDocking);
 	// Scan the target, if able and commanded to. Return a ShipEvent bitmask
 	// giving the types of scan that succeeded.
-	int Scan(const PlayerInfo &player);
+	int Scan();
 	// Find out what fraction of the scan is complete.
 	double CargoScanFraction() const;
 	double OutfitScanFraction() const;
@@ -285,7 +278,6 @@ public:
 	void Destroy();
 	void SelfDestruct();
 	void Restore();
-	bool IsDamaged() const;
 	// Check if this ship has been destroyed.
 	bool IsDestroyed() const;
 	// Recharge and repair this ship (e.g. because it has landed).
@@ -323,6 +315,7 @@ public:
 	// much it costs for this ship to jump, how far it can jump, and its possible
 	// jump methods.
 	const ShipJumpNavigation &JumpNavigation() const;
+	void RecalibrateJumpNavigation();
 	// Get the number of jumps this ship can make before running out of fuel.
 	// This depends on how much fuel it has and what sort of hyperdrive it uses.
 	// This does not show accurate number of jumps remaining beyond 1.
@@ -358,7 +351,6 @@ public:
 	double TurnRate() const;
 	double Acceleration() const;
 	double MaxVelocity() const;
-	double ReverseAcceleration() const;
 	double MaxReverseVelocity() const;
 
 	// This ship just got hit by a weapon. Take damage according to the
@@ -446,19 +438,12 @@ public:
 	void SetTargetAsteroid(const std::shared_ptr<Minable> &asteroid);
 	void SetTargetFlotsam(const std::shared_ptr<Flotsam> &flotsam);
 
-	bool CanPickUp(const Flotsam &flotsam) const;
-
 	// Manage escorts. When you set this ship's parent, it will automatically
 	// register itself as an escort of that ship, and unregister itself from any
 	// previous parent it had.
 	void SetParent(const std::shared_ptr<Ship> &ship);
 	std::shared_ptr<Ship> GetParent() const;
 	const std::vector<std::weak_ptr<Ship>> &GetEscorts() const;
-
-	// How many AI steps has this ship been lingering?
-	int GetLingerSteps() const;
-	// The AI wants the ship to linger for one AI step.
-	void Linger();
 
 
 private:
@@ -540,15 +525,11 @@ private:
 	double attraction = 0.;
 	double deterrence = 0.;
 
-	// Number of AI steps this ship has spent lingering
-	int lingerSteps = 0;
-
 	Command commands;
 	FireCommand firingCommands;
 
 	Personality personality;
 	const Phrase *hail = nullptr;
-	ShipAICache aiCache;
 
 	// Installed outfits, cargo, etc.:
 	Outfit attributes;
@@ -576,8 +557,6 @@ private:
 	double heat = 0.;
 	// Accrued "ion damage" that will affect this ship's energy over time.
 	double ionization = 0.;
-	// Accrued "scrambling damage" that will affect this ship's weaponry over time.
-	double scrambling = 0.;
 	// Accrued "disruption damage" that will affect this ship's shield effectiveness over time.
 	double disruption = 0.;
 	// Accrued "slowing damage" that will affect this ship's movement over time.

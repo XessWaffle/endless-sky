@@ -182,9 +182,8 @@ void MapOutfitterPanel::DrawItems()
 		DoHelp("map advanced shops");
 	list.clear();
 	Point corner = Screen::TopLeft() + Point(0, scroll);
-	for(const auto &cat : categories)
+	for(const string &category : categories)
 	{
-		const string &category = cat.Name();
 		auto it = catalog.find(category);
 		if(it == catalog.end())
 			continue;
@@ -195,7 +194,7 @@ void MapOutfitterPanel::DrawItems()
 
 		for(const Outfit *outfit : it->second)
 		{
-			string price = Format::CreditString(outfit->Cost());
+			string price = Format::Credits(outfit->Cost()) + " credits";
 
 			string info;
 			if(outfit->Get("minable") > 0.)
@@ -203,12 +202,12 @@ void MapOutfitterPanel::DrawItems()
 			else if(outfit->Get("installable") < 0.)
 			{
 				double space = outfit->Mass();
-				info = Format::CargoString(space, "space");
+				info = Format::Number(space) + (abs(space) == 1. ? " ton" : " tons") + " of space";
 			}
 			else
 			{
 				double space = -outfit->Get("outfit space");
-				info = Format::MassString(space);
+				info = Format::Number(space) + (abs(space) == 1. ? " ton" : " tons");
 				if(space && -outfit->Get("weapon capacity") == space)
 					info += " of weapon space";
 				else if(space && -outfit->Get("engine capacity") == space)
@@ -230,12 +229,9 @@ void MapOutfitterPanel::DrawItems()
 						continue;
 
 					const Planet &planet = *object.GetPlanet();
-					if(planet.HasOutfitter())
-					{
-						const auto pit = storage.find(&planet);
-						if(pit != storage.end())
-							storedInSystem += pit->second.Get(outfit);
-					}
+					const auto pit = storage.find(&planet);
+					if(pit != storage.end())
+						storedInSystem += pit->second.Get(outfit);
 					if(planet.Outfitter().Has(outfit))
 					{
 						isForSale = true;
@@ -279,13 +275,12 @@ void MapOutfitterPanel::Init()
 
 	// Add outfits in storage
 	for(const auto &it : player.PlanetaryStorage())
-		if(it.first->HasOutfitter())
-			for(const auto &oit : it.second.Outfits())
-				if(!seen.count(oit.first))
-				{
-					catalog[oit.first->Category()].push_back(oit.first);
-					seen.insert(oit.first);
-				}
+		for(const auto &oit : it.second.Outfits())
+			if(!seen.count(oit.first))
+			{
+				catalog[oit.first->Category()].push_back(oit.first);
+				seen.insert(oit.first);
+			}
 
 	// Add all known minables.
 	for(const auto &it : player.Harvested())

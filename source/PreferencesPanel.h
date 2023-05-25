@@ -58,9 +58,6 @@ private:
 	int editing;
 	int selected;
 	int hover;
-	int oldSelected;
-	int oldHover;
-	int latest;
 	Point hoverPoint;
 	// Which page of the preferences we're on.
 	char page = 'c';

@@ -1,4 +1,4 @@
-test-data "To Accept Blocks Accept Save"
+test-data "To Accept Sparrow On Prime"
 	category "savegame"
 	contents
 		pilot Billy Bughunter
@@ -68,31 +68,27 @@ test-data "To Accept Blocks Accept Save"
 		visited Betelgeuse
 		"visited planet" Prime
 
-test-data "To Accept Blocks Accept Mission"
-	category mission
-	contents
-		mission "%TEST%: TO ACCEPT BLOCKED MISSION"
-			source "Prime"
-			destination "Earth"
-			blocked "There mission is blocked because you are not in the right type of ship."
-			to offer
-				has "%TEST%: TO ACCEPT BLOCKED MISSION OFFER"
-			to accept
-				has "flagship model: Shuttle"
-			on offer
-				conversation
-					`THIS IS A TO ACCEPT BLOCKED MISSION YO!`
-						accept
-			on accept
-				set "fail test"
+mission "%TEST%: TO ACCEPT BLOCKED MISSION"
+	source "Prime"
+	destination "Earth"
+	blocked "There mission is blocked because you are not in the right type of ship."
+	to offer
+		has "%TEST%: TO ACCEPT BLOCKED MISSION OFFER"
+	to accept
+		has "flagship model: Shuttle"
+	on offer
+		conversation
+			`THIS IS A TO ACCEPT BLOCKED MISSION YO!`
+				accept
+	on accept
+		set "fail test"
 
 test "To Accept Blocks Accepts When Conditions Fail"
 	status active
 	description "Test the the to accept block successfully blocks the mission if the conditions fail."
 	sequence
-		inject "To Accept Blocks Accept Mission"
 		# Create/inject the savegame and load it.
-		inject "To Accept Blocks Accept Save"
+		inject "To Accept Sparrow On Prime"
 		call "Load First Savegame"
 		apply
 			"%TEST%: TO ACCEPT BLOCKED MISSION OFFER" = 1

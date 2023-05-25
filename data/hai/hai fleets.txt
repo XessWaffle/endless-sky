@@ -531,8 +531,7 @@ fleet "Large Hai Merchant (Human)"
 		"Firebird (Hai Shields)"
 	variant 6
 		"Freighter (Hai)" 2
-		"Grasshopper"
-		"Grasshopper (Ion)"
+		"Grasshopper" 2
 	variant 3
 		"Freighter (Hai)" 2
 		"Grasshopper (Tracker)" 2
@@ -585,8 +584,7 @@ fleet "Large Hai Merchant (Human)"
 		"Headhunter (Hai)" 2
 	variant 1
 		"Bulk Freighter (Hai)"
-		"Grasshopper"
-		"Grasshopper (Ion)"
+		"Grasshopper" 2
 	variant 1
 		"Bulk Freighter (Hai)"
 		"Grasshopper (Tracker)" 2
@@ -599,12 +597,10 @@ fleet "Large Hai Merchant (Human)"
 		"Lightning Bug" 1
 	variant 2
 		"Bactrian (Hai Weapons)"
-		"Grasshopper" 2
-		"Grasshopper (Ion)"
+		"Grasshopper" 3
 	variant 2
 		"Bactrian (Hai Engines)"
-		"Grasshopper"
-		"Grasshopper (Ion)" 2
+		"Grasshopper" 3
 	variant 2
 		"Arrow (Hai)"
 	variant 1
@@ -641,7 +637,7 @@ fleet "Large Hai Merchant (Human)"
 
 
 fleet "Unfettered Logistics"
-	government "Hai (Unfettered Civilians)"
+	government "Hai (Friendly Unfettered)"
 	names "hai"
 	cargo 1
 	commodities "Food" "Heavy Metals" "Medical"
@@ -649,43 +645,43 @@ fleet "Unfettered Logistics"
 		confusion 25
 		timid frugal appeasing
 	variant 3
-		"Aphid (Unfettered)" 2
+		"Aphid" 2
 		"Lightning Bug (Pulse)"
 	variant 3
-		"Aphid (Unfettered)" 3
+		"Aphid" 3
 		"Lightning Bug (Pulse)"
 	variant 3
-		"Aphid (Unfettered)" 2
+		"Aphid" 2
 		"Lightning Bug"
 	variant
-		"Aphid (Unfettered)" 3
+		"Aphid" 3
 		"Lightning Bug"
 	variant 2
-		"Aphid (Unfettered)" 3
-		"Sea Scorpion (Tracker)"
+		"Aphid" 3
+		"Sea Scorpion"
 	variant 2
-		"Aphid (Unfettered)" 3
+		"Aphid" 3
 		"Sea Scorpion (Ion)"
 	variant
-		"Aphid (Unfettered)" 3
+		"Aphid" 3
 		"Sea Scorpion (Pulse)"
 	variant 2
-		"Aphid (Unfettered)" 4
-		"Sea Scorpion (Tracker)"
+		"Aphid" 4
+		"Sea Scorpion"
 	variant 2
-		"Aphid (Unfettered)" 4
+		"Aphid" 4
 		"Sea Scorpion (Ion)"
 	variant
-		"Aphid (Unfettered)" 4
+		"Aphid" 4
 		"Sea Scorpion (Pulse)"
 	variant 2
-		"Aphid (Unfettered)" 5
-		"Sea Scorpion (Tracker)"
+		"Aphid" 5
+		"Sea Scorpion"
 	variant 2
-		"Aphid (Unfettered)" 5
+		"Aphid" 5
 		"Sea Scorpion (Ion)"
 	variant
-		"Aphid (Unfettered)" 5
+		"Aphid" 5
 		"Sea Scorpion (Pulse)"
 
 fleet "Small Unfettered"
@@ -703,7 +699,7 @@ fleet "Small Unfettered"
 	variant
 		"Lightning Bug (Pulse)"
 	variant 2
-		"Sea Scorpion (Tracker)"
+		"Sea Scorpion"
 	variant 2
 		"Sea Scorpion (Ion)"
 	variant
@@ -717,13 +713,13 @@ fleet "Large Unfettered"
 	personality
 		disables plunders
 	variant 2
-		"Shield Beetle (Unfettered)"
+		"Shield Beetle"
 		"Lightning Bug (Pulse)" 2
 	variant 2
 		"Shield Beetle (Tracker)"
 		"Lightning Bug" 2
 	variant 1
-		"Shield Beetle (Unfettered)"
+		"Shield Beetle"
 		"Lightning Bug (Pulse)"
 	variant 1
 		"Shield Beetle (Tracker)"
@@ -742,55 +738,18 @@ fleet "Large Unfettered"
 		"Lightning Bug (Pulse)" 2
 	variant 2
 		"Shield Beetle (Pulse)"
-		"Shield Beetle (Unfettered)"
+		"Shield Beetle"
 	variant 2
 		"Shield Beetle (Pulse)"
 		"Shield Beetle (Tracker)"
 	variant
 		"Shield Beetle (Pulse)"
-		"Shield Beetle (Unfettered)"
+		"Shield Beetle"
 		"Lightning Bug (Pulse)" 2
 	variant
 		"Shield Beetle (Pulse)"
 		"Shield Beetle (Tracker)"
 		"Lightning Bug" 2
-	variant 4
-		"Sea Scorpion (Pulse)" 3
-	variant 3
-		"Sea Scorpion (Pulse)" 2
-		"Sea Scorpion (Tracker)" 2
-	variant 2
-		"Sea Scorpion (Pulse)" 2
-		"Shield Beetle (Unfettered)"
-	variant 2
-		"Sea Scorpion (Ion)"
-		"Sea Scorpion (Pulse)"
-		"Shield Beetle (Unfettered)"
-	variant 2
-		"Sea Scorpion (Pulse)" 2
-		"Shield Beetle (Pulse)"
-	variant 4
-		"Sea Scorpion (Tracker)" 3
-	variant 3
-		"Sea Scorpion (Tracker)" 4
-	variant 2
-		"Sea Scorpion (Tracker)" 2
-		"Shield Beetle (Unfettered)"
-	variant 2
-		"Sea Scorpion (Tracker)" 2
-		"Shield Beetle (Pulse)"
-	variant 2
-		"Lightning Bug"
-		"Sea Scorpion (Tracker)"
-		"Shield Beetle (Pulse)"
-	variant 2
-		"Lightning Bug"
-		"Sea Scorpion (Ion)"
-		"Shield Beetle (Pulse)"
-	variant 2
-		"Lightning Bug (Pulse)"
-		"Sea Scorpion (Pulse)"
-		"Shield Beetle (Pulse)"
 
 fleet "Large Plundering Unfettered"
 	government "Hai (Unfettered)"
@@ -840,7 +799,7 @@ fleet "Large Plundering Unfettered"
 		"Sea Scorpion (Pulse)" 3
 	variant 3
 		"Sea Scorpion (Pulse)" 2
-		"Sea Scorpion (Tracker)" 2
+		"Sea Scorpion" 2
 	variant 2
 		"Sea Scorpion (Pulse)" 2
 		"Shield Beetle"
@@ -852,18 +811,18 @@ fleet "Large Plundering Unfettered"
 		"Sea Scorpion (Pulse)" 2
 		"Shield Beetle (Pulse)"
 	variant 4
-		"Sea Scorpion (Tracker)" 3
+		"Sea Scorpion" 3
 	variant 3
-		"Sea Scorpion (Tracker)" 4
+		"Sea Scorpion" 4
 	variant 2
-		"Sea Scorpion (Tracker)" 2
+		"Sea Scorpion" 2
 		"Shield Beetle"
 	variant 2
-		"Sea Scorpion (Tracker)" 2
+		"Sea Scorpion" 2
 		"Shield Beetle (Pulse)"
 	variant 2
 		"Lightning Bug"
-		"Sea Scorpion (Tracker)"
+		"Sea Scorpion"
 		"Shield Beetle (Pulse)"
 	variant 2
 		"Lightning Bug"

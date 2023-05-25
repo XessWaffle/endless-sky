@@ -61,9 +61,11 @@ outfitter "Elenctic Commune Basic"
 	"Local Map"
 
 
-event "liberated elenchus"
+event "Liberated Elenchus"
 	system "Devil-Hide"
 		government "Elenctic Commune"
+		remove fleet "Devil-Run Warships"
+		remove fleet "Devil-Run Miners"
 		add fleet "Elenctic Commune Miners" 3000
 	system "Deep Space 19M5"
 		government "Elenctic Commune"

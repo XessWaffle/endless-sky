@@ -118,7 +118,6 @@ public:
 	const std::string &Name() const;
 	Status GetStatus() const;
 	const std::string &StatusText() const;
-	std::set<std::string> RelevantConditions() const;
 
 	// Check the game status and perform the next test action.
 	void Step(TestContext &context, PlayerInfo &player, Command &commandToGive) const;

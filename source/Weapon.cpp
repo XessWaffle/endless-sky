@@ -35,7 +35,6 @@ void Weapon::LoadWeapon(const DataNode &node)
 	bool isClustered = false;
 	calculatedDamage = false;
 	doesDamage = false;
-	bool safeRangeOverriden = false;
 	bool disabledDamageSet = false;
 	bool minableDamageSet = false;
 	bool relativeDisabledDamageSet = false;
@@ -113,32 +112,6 @@ void Weapon::LoadWeapon(const DataNode &node)
 					child.PrintTrace("Skipping unknown or incomplete submunition attribute:");
 			}
 		}
-		else if(key == "inaccuracy")
-		{
-			inaccuracy = child.Value(1);
-			for(const DataNode &grand : child)
-			{
-				for(int j = 0; j < grand.Size(); ++j)
-				{
-					const string &token = grand.Token(j);
-
-					if(token == "inverted")
-						inaccuracyDistribution.second = true;
-					else if(token == "triangular")
-						inaccuracyDistribution.first = Distribution::Type::Triangular;
-					else if(token == "uniform")
-						inaccuracyDistribution.first = Distribution::Type::Uniform;
-					else if(token == "narrow")
-						inaccuracyDistribution.first = Distribution::Type::Narrow;
-					else if(token == "medium")
-						inaccuracyDistribution.first = Distribution::Type::Medium;
-					else if(token == "wide")
-						inaccuracyDistribution.first = Distribution::Type::Wide;
-					else
-						grand.PrintTrace("Skipping unknown distribution attribute:");
-				}
-			}
-		}
 		else
 		{
 			double value = child.Value(1);
@@ -181,6 +154,8 @@ void Weapon::LoadWeapon(const DataNode &node)
 			}
 			else if(key == "turn")
 				turn = value;
+			else if(key == "inaccuracy")
+				inaccuracy = value;
 			else if(key == "turret turn")
 				turretTurn = value;
 			else if(key == "tracking")
@@ -205,8 +180,6 @@ void Weapon::LoadWeapon(const DataNode &node)
 				firingShields = value;
 			else if(key == "firing ion")
 				firingIon = value;
-			else if(key == "firing scramble")
-				firingScramble = value;
 			else if(key == "firing slowing")
 				firingSlowing = value;
 			else if(key == "firing disruption")
@@ -235,11 +208,6 @@ void Weapon::LoadWeapon(const DataNode &node)
 				triggerRadius = max(0., value);
 			else if(key == "blast radius")
 				blastRadius = max(0., value);
-			else if(key == "safe range override")
-			{
-				safeRange = max(0., value);
-				safeRangeOverriden = true;
-			}
 			else if(key == "shield damage")
 				damage[SHIELD_DAMAGE] = value;
 			else if(key == "hull damage")
@@ -262,8 +230,6 @@ void Weapon::LoadWeapon(const DataNode &node)
 				damage[ENERGY_DAMAGE] = value;
 			else if(key == "ion damage")
 				damage[ION_DAMAGE] = value;
-			else if(key == "scrambling damage")
-				damage[WEAPON_JAMMING_DAMAGE] = value;
 			else if(key == "disruption damage")
 				damage[DISRUPTION_DAMAGE] = value;
 			else if(key == "slowing damage")
@@ -360,11 +326,6 @@ void Weapon::LoadWeapon(const DataNode &node)
 			++it;
 		}
 	}
-
-	// Only when the weapon is not safe and has a blast radius is safeRange needed,
-	// except if it is already overridden.
-	if(!isSafe && blastRadius > 0 && !safeRangeOverriden)
-		safeRange = (blastRadius + triggerRadius);
 }
 
 
@@ -532,18 +493,4 @@ double Weapon::TotalDamage(int index) const
 		}
 	}
 	return damage[index];
-}
-
-
-
-pair<Distribution::Type, bool> Weapon::InaccuracyDistribution() const
-{
-	return inaccuracyDistribution;
-}
-
-
-
-double Weapon::Inaccuracy() const
-{
-	return inaccuracy;
 }

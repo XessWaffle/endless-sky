@@ -107,9 +107,8 @@ BoardingPanel::BoardingPanel(PlayerInfo &player, const shared_ptr<Ship> &victim)
 			plunder.emplace_back(outfit, count);
 	}
 
-	canCapture = victim->IsCapturable() || player.CaptureOverriden(victim);
 	// Some "ships" do not represent something the player could actually pilot.
-	if(!canCapture)
+	if(!victim->IsCapturable())
 		messages.emplace_back("This is not a ship that you can capture.");
 
 	// Sort the plunder by price per ton.
@@ -182,7 +181,7 @@ void BoardingPanel::Draw()
 			Round(defenseOdds.DefenderPower(crew)));
 	}
 	int vCrew = victim ? victim->Crew() : 0;
-	if(victim && (canCapture || victim->IsYours()))
+	if(victim && (victim->IsCapturable() || victim->IsYours()))
 	{
 		info.SetString("enemy crew", to_string(vCrew));
 		info.SetString("enemy attack",
@@ -190,7 +189,7 @@ void BoardingPanel::Draw()
 		info.SetString("enemy defense",
 			Round(attackOdds.DefenderPower(vCrew)));
 	}
-	if(victim && canCapture && !victim->IsYours())
+	if(victim && victim->IsCapturable() && !victim->IsYours())
 	{
 		// If you haven't initiated capture yet, show the self destruct odds in
 		// the attack odds. It's illogical for you to have access to that info,
@@ -490,7 +489,7 @@ bool BoardingPanel::CanCapture() const
 		return false;
 	if(victim->IsYours())
 		return false;
-	if(!canCapture)
+	if(!victim->IsCapturable())
 		return false;
 
 	return (!victim->RequiredCrew() || you->Crew() > 1);

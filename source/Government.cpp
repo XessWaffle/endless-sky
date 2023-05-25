@@ -22,7 +22,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Outfit.h"
 #include "Phrase.h"
 #include "Politics.h"
-#include "Ship.h"
 #include "ShipEvent.h"
 
 #include <algorithm>
@@ -34,33 +33,30 @@ namespace {
 	void PenaltyHelper(const DataNode &node, map<int, double> &penalties)
 	{
 		for(const DataNode &child : node)
-			if(child.Size() >= 2)
+			if(node.Size() >= 2)
 			{
-				const string &key = child.Token(0);
-				if(key == "assist")
+				if(node.Token(0) == "assist")
 					penalties[ShipEvent::ASSIST] = child.Value(1);
-				else if(key == "disable")
+				else if(node.Token(0) == "disable")
 					penalties[ShipEvent::DISABLE] = child.Value(1);
-				else if(key == "board")
+				else if(child.Token(0) == "board")
 					penalties[ShipEvent::BOARD] = child.Value(1);
-				else if(key == "capture")
+				else if(child.Token(0) == "capture")
 					penalties[ShipEvent::CAPTURE] = child.Value(1);
-				else if(key == "destroy")
+				else if(child.Token(0) == "destroy")
 					penalties[ShipEvent::DESTROY] = child.Value(1);
-				else if(key == "scan")
+				else if(child.Token(0) == "scan")
 				{
 					penalties[ShipEvent::SCAN_OUTFITS] = child.Value(1);
 					penalties[ShipEvent::SCAN_CARGO] = child.Value(1);
 				}
-				else if(key == "provoke")
+				else if(child.Token(0) == "provoke")
 					penalties[ShipEvent::PROVOKE] = child.Value(1);
-				else if(key == "atrocity")
+				else if(child.Token(0) == "atrocity")
 					penalties[ShipEvent::ATROCITY] = child.Value(1);
 				else
 					child.PrintTrace("Skipping unrecognized attribute:");
 			}
-			else
-				child.PrintTrace("Skipping unrecognized attribute:");
 	}
 
 	// Determine the penalty for the given ShipEvent based on the values in the given map.
@@ -74,34 +70,6 @@ namespace {
 	}
 
 	unsigned nextID = 0;
-}
-
-
-
-Government::RaidFleet::RaidFleet(const Fleet *fleet, double minAttraction, double maxAttraction)
-	: fleet(fleet), minAttraction(minAttraction), maxAttraction(maxAttraction)
-{
-}
-
-
-
-const Fleet *Government::RaidFleet::GetFleet() const
-{
-	return fleet;
-}
-
-
-
-double Government::RaidFleet::MinAttraction() const
-{
-	return minAttraction;
-}
-
-
-
-double Government::RaidFleet::MaxAttraction() const
-{
-	return maxAttraction;
 }
 
 
@@ -135,10 +103,6 @@ void Government::Load(const DataNode &node)
 			displayName = name;
 	}
 
-	// For the following keys, if this data node defines a new value for that
-	// key, the old values should be cleared (unless using the "add" keyword).
-	set<string> shouldOverwrite = {"raid"};
-
 	for(const DataNode &child : node)
 	{
 		bool remove = child.Token(0) == "remove";
@@ -153,31 +117,12 @@ void Government::Load(const DataNode &node)
 		int valueIndex = (add || remove) ? 2 : 1;
 		bool hasValue = child.Size() > valueIndex;
 
-		// Check for conditions that require clearing this key's current value.
-		// "remove <key>" means to clear the key's previous contents.
-		// "remove <key> <value>" means to remove just that value from the key.
-		bool removeAll = (remove && !hasValue);
-		// If this is the first entry for the given key, and we are not in "add"
-		// or "remove" mode, its previous value should be cleared.
-		bool overwriteAll = (!add && !remove && shouldOverwrite.count(key));
-
-		if(removeAll || overwriteAll)
+		if(remove)
 		{
 			if(key == "provoked on scan")
 				provokedOnScan = false;
-			else if(key == "reputation")
-			{
-				for(const DataNode &grand : child)
-				{
-					const string &grandKey = grand.Token(0);
-					if(grandKey == "max")
-						reputationMax = numeric_limits<double>::max();
-					else if(grandKey == "min")
-						reputationMin = numeric_limits<double>::lowest();
-				}
-			}
 			else if(key == "raid")
-				raidFleets.clear();
+				raidFleet = nullptr;
 			else if(key == "display name")
 				displayName = name;
 			else if(key == "death sentence")
@@ -192,10 +137,6 @@ void Government::Load(const DataNode &node)
 				hostileDisabledHail = nullptr;
 			else if(key == "language")
 				language.clear();
-			else if(key == "send untranslated hails")
-				sendUntranslatedHails = false;
-			else if(key == "trusted")
-				trusted.clear();
 			else if(key == "enforces")
 				enforcementZones.clear();
 			else if(key == "custom penalties for")
@@ -207,34 +148,8 @@ void Government::Load(const DataNode &node)
 			else if(key == "atrocities")
 				atrocities.clear();
 			else
-				child.PrintTrace("Cannot \"remove\" the given key:");
-
-			// If not in "overwrite" mode, move on to the next node.
-			if(overwriteAll)
-				shouldOverwrite.erase(key);
-			else
-				continue;
+				child.PrintTrace("Cannot \"remove\" a specific value from the given key:");
 		}
-
-		if(key == "raid")
-		{
-			const Fleet *fleet = GameData::Fleets().Get(child.Token(valueIndex));
-			if(remove)
-			{
-				for(auto it = raidFleets.begin(); it != raidFleets.end(); )
-					if(it->GetFleet() == fleet)
-						it = raidFleets.erase(it);
-					else
-						++it;
-			}
-			else
-				raidFleets.emplace_back(fleet,
-					child.Size() > (valueIndex + 1) ? child.Value(valueIndex + 1) : 2.,
-					child.Size() > (valueIndex + 2) ? child.Value(valueIndex + 2) : 0.);
-		}
-		// Handle the attributes which cannot have a value removed.
-		else if(remove)
-			child.PrintTrace("Cannot \"remove\" a specific value from the given key:");
 		else if(key == "attitude toward")
 		{
 			for(const DataNode &grand : child)
@@ -247,51 +162,6 @@ void Government::Load(const DataNode &node)
 				}
 				else
 					grand.PrintTrace("Skipping unrecognized attribute:");
-			}
-		}
-		else if(key == "reputation")
-		{
-			for(const DataNode &grand : child)
-			{
-				const string &grandKey = grand.Token(0);
-				bool hasGrandValue = grand.Size() >= 2;
-				if(grandKey == "player reputation" && hasGrandValue)
-					initialPlayerReputation = add ? initialPlayerReputation + child.Value(valueIndex) : child.Value(valueIndex);
-				else if(grandKey == "max" && hasGrandValue)
-					reputationMax = add ? reputationMax + grand.Value(valueIndex) : grand.Value(valueIndex);
-				else if(grandKey == "min" && hasGrandValue)
-					reputationMin = add ? reputationMin + grand.Value(valueIndex) : grand.Value(valueIndex);
-				else
-					grand.PrintTrace("Skipping unrecognized attribute:");
-			}
-		}
-		else if(key == "trusted")
-		{
-			bool clearTrusted = !trusted.empty();
-			for(const DataNode &grand : child)
-			{
-				bool remove = grand.Token(0) == "remove";
-				bool add = grand.Token(0) == "add";
-				if((add || remove) && grand.Size() < 2)
-				{
-					grand.PrintTrace("Warning: Skipping invalid \"" + child.Token(0) + "\" tag:");
-					continue;
-				}
-				if(clearTrusted && !add && !remove)
-				{
-					trusted.clear();
-					clearTrusted = false;
-				}
-				const Government *gov = GameData::Governments().Get(grand.Token(remove || add));
-				if(gov)
-				{
-					if(remove)
-						trusted.erase(gov);
-					else
-						trusted.insert(gov);
-				}
-				else
-					grand.PrintTrace("Skipping unrecognized government:");
 			}
 		}
 		else if(key == "penalty for")
@@ -349,8 +219,6 @@ void Government::Load(const DataNode &node)
 		else if(key == "foreign penalties for")
 			for(const DataNode &grand : child)
 				useForeignPenaltiesFor.insert(GameData::Governments().Get(grand.Token(0))->id);
-		else if(key == "send untranslated hails")
-			sendUntranslatedHails = true;
 		else if(!hasValue)
 			child.PrintTrace("Error: Expected key to have a value:");
 		else if(key == "player reputation")
@@ -389,6 +257,8 @@ void Government::Load(const DataNode &node)
 			hostileDisabledHail = GameData::Phrases().Get(child.Token(valueIndex));
 		else if(key == "language")
 			language = child.Token(valueIndex);
+		else if(key == "raid")
+			raidFleet = GameData::Fleets().Get(child.Token(valueIndex));
 		else if(key == "enforces" && child.Token(valueIndex) == "all")
 		{
 			enforcementZones.clear();
@@ -397,12 +267,6 @@ void Government::Load(const DataNode &node)
 		else
 			child.PrintTrace("Skipping unrecognized attribute:");
 	}
-
-	// Ensure reputation minimum is not above the
-	// maximum, and set reputation again to enforce limtis.
-	if(reputationMin > reputationMax)
-		reputationMin = reputationMax;
-	SetReputation(Reputation());
 
 	// Default to the standard disabled hail messages.
 	if(!friendlyDisabledHail)
@@ -518,13 +382,6 @@ double Government::GetFineFraction() const
 
 
 
-bool Government::Trusts(const Government *government) const
-{
-	return government == this || trusted.count(government);
-}
-
-
-
 // Returns true if this government has no enforcement restrictions, or if the
 // indicated system matches at least one enforcement zone.
 bool Government::CanEnforce(const System *system) const
@@ -580,20 +437,11 @@ const string &Government::Language() const
 
 
 
-// Find out if this government should send custom hails even if the player does not know its language.
-bool Government::SendUntranslatedHails() const
+// Pirate raids in this government's systems use this fleet definition. If
+// it is null, there are no pirate raids.
+const Fleet *Government::RaidFleet() const
 {
-	return sendUntranslatedHails;
-}
-
-
-
-// Pirate raids in this government's systems use these fleet definitions. If
-// it is empty, there are no pirate raids.
-// The second attribute denotes the minimal and maximal attraction required for the fleet to appear.
-const vector<Government::RaidFleet> &Government::RaidFleets() const
-{
-	return raidFleets;
+	return raidFleet;
 }
 
 
@@ -674,35 +522,10 @@ int Government::Fines(const Outfit *outfit) const
 
 
 
-bool Government::FinesContents(const Ship *ship) const
-{
-	for(auto &it : ship->Outfits())
-		if(this->Fines(it.first) || this->Condemns(it.first))
-			return true;
-
-	return ship->Cargo().IllegalCargoFine(this);
-}
-
-
-
 // Get or set the player's reputation with this government.
 double Government::Reputation() const
 {
 	return GameData::GetPolitics().Reputation(this);
-}
-
-
-
-double Government::ReputationMax() const
-{
-	return reputationMax;
-}
-
-
-
-double Government::ReputationMin() const
-{
-	return reputationMin;
 }
 
 
